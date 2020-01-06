@@ -86,6 +86,46 @@ public class MemberentityFacadeREST extends AbstractFacade<Memberentity> {
         return list;
     }
 
+
+    @GET
+    @Path("member")
+    @Produces({"application/json"})
+    public Response memberProfile(@QueryParam("email") String email) {
+
+        Member member = new Member();
+
+        try {
+            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/islandfurniture-it07?zeroDateTimeBehavior=convertToNull&user=root&password=12345");
+            String stmt = "SELECT * FROM memberentity m WHERE m.EMAIL=?";
+            PreparedStatement ps = conn.prepareStatement(stmt);
+            ps.setString(1, email);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                member.setId(rs.getLong("ID"));
+                member.setName(rs.getString("NAME"));
+                member.setEmail(rs.getString("EMAIL"));
+                member.setAge(rs.getInt("AGE"));
+                member.setPhone(rs.getString("PHONE"));
+                member.setAddress(rs.getString("ADDRESS"));
+                member.setCity(rs.getString("CITY"));
+                member.setIncome(rs.getInt("INCOME"));
+                member.setSecurityQuestion(rs.getInt("SECURITYQUESTION"));
+                member.setSecurityAnswer(rs.getString("SECURITYANSWER"));
+                member.setServiceLevelAgreement(rs.getInt("SERVICELEVELAGREEMENT"));
+
+                GenericEntity<Member> entity = new GenericEntity<Member>(member) {
+                };
+
+                return Response.status(200).entity(entity).build();
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return null;
+        }
+        return null;
+    }
+
+
     //this function is used by ECommerce_MemberLoginServlet
     @GET
     @Path("login")
